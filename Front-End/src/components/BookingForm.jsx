@@ -1,0 +1,202 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+function BookingForm() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [pickupLocation, setPickupLocation] = useState("");
+  const [dropoffLocation, setDropoffLocation] = useState("");
+  const [shuttle, setShuttle] = useState(""); // Stores shuttle ID
+  const [locations, setLocations] = useState([]);
+  const [shuttles, setShuttles] = useState([]);
+
+  const cached = localStorage.getItem("locations");
+  const user = localStorage.getItem("user");
+  const user_id = user ? JSON.parse(user).userId : null;
+  const token = localStorage.getItem("token");
+  // this  will get the location in two
+
+  const fetchLocations = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/admin/locations");
+      const data = await response.json();
+      localStorage.setItem("locations", JSON.stringify(data));
+      setLocations(data);
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchShuttles = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("http://localhost:3000/shuttle");
+        const data = await response.json();
+        setShuttles(data);
+      } catch (error) {
+        console.error("Error fetching shuttles:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (cached) {
+      setLocations(JSON.parse(cached));
+    } else {
+      fetchLocations();
+    }
+
+    fetchShuttles();
+  }, [cached]);
+
+  async function handleBooking() {
+    try {
+      setLoading(true);
+      const response = await fetch("http://localhost:3000/booking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          userId: user_id,
+          pickupLocation_Id: parseInt(pickupLocation),
+          dropoffLocation_Id: parseInt(dropoffLocation),
+          shuttleId: parseInt(shuttle),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Booking failed");
+      }
+      navigate("/");
+    } catch (error) {
+      console.error("Booking error:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  let date = "";
+  let time = "";
+  const shuttleObj = shuttles.find((s) => s.id === parseInt(shuttle));
+  // console.log("shuttle:", shuttle);
+  // console.log("shuttleObj:", shuttleObj);
+
+  if (shuttleObj) {
+    // console.log("departure_time:", shuttleObj.departure_time);
+    [date, time] = shuttleObj.departure_time.split("T");
+    // console.log("date:", date, "time:", time);
+    time = "17:00";
+  }
+  function toTitleCase(str) {
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
+  return (
+    <div className="booking-form-container max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleBooking();
+        }}
+        className="space-y-4"
+      >
+        <div className="form-group">
+          <label htmlFor="pickup">Pickup Location:</label>
+          <select
+            id="pickup"
+            name="pickup"
+            value={pickupLocation}
+            onChange={(e) => setPickupLocation(e.target.value)}
+            required
+          >
+            <option value="">-- Select Pickup --</option>
+            {locations.map((location) => (
+              <option key={location.id} value={location.id}>
+                Location: {toTitleCase(location.location_name) + "  |  "}
+                price: {location.price}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="destination">Destination:</label>
+          <select
+            id="destination"
+            name="destination"
+            value={dropoffLocation}
+            onChange={(e) => setDropoffLocation(e.target.value)}
+            required
+          >
+            <option value="">-- Select Destination --</option>
+            {locations.map((location) => (
+              <option key={location.id} value={location.id}>
+                Location: {toTitleCase(location.location_name) + "  |  "}
+                price: {location.price}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="shuttle">Shuttle:</label>
+          <select
+            id="shuttle"
+            name="shuttle"
+            value={shuttle}
+            onChange={(e) => setShuttle(e.target.value)}
+            required
+          >
+            <option value="">-- Select Shuttle --</option>
+            {shuttles.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name} ({s.booked_seats}/{s.capacity})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="date">Departure Date:</label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            value={date}
+            readOnly
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="time">Time:</label>
+          <input
+            type="time"
+            id="time"
+            name="time"
+            value={time}
+            readOnly
+            required
+          />
+        </div>
+
+        <div className="form-actions pt-4">
+          <button type="submit" disabled={loading}>
+            {loading ? "Processing..." : "Book Now"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+export default BookingForm;

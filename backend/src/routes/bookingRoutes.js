@@ -73,14 +73,32 @@ bookingRouter.post("/", async (req, res) => {
     // );
     // if (payment.status === "success") {
     // Build email HTML
-    const html = `<div>
-      <h2>Booking Confirmation</h2>
-      <p>Shuttle ID: ${shuttle?.name || "Unknown"}</p>
-      <p>User ID: ${booking.userId}</p>
-      <p>Pickup Location: ${pickupLocation?.location_name || "Unknown"}</p>
-      <p>Dropoff Location: ${dropoffLocation?.location_name || "Unknown"}</p>
-      <p>Booking Time: ${booking?.bookingTime}</p>
-      <p>Price: ${price}</p>
+    const html = `<div style="max-width: 600px; margin: 30px auto; background-color: #ffffff; padding: 24px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); font-family: Arial, sans-serif; color: #333;">
+      <h2 style="font-size: 22px; color: #1a73e8; margin-bottom: 20px;">Booking Confirmation</h2>
+
+      <p style="font-size: 16px; margin: 10px 0;">
+        <strong>Shuttle ID:</strong> ${shuttle?.name || "Unknown"}
+      </p>
+
+      <p style="font-size: 16px; margin: 10px 0;">
+        <strong>User ID:</strong> ${booking.userId}
+      </p>
+
+      <p style="font-size: 16px; margin: 10px 0;">
+        <strong>Pickup Location:</strong> ${pickupLocation?.location_name || "Unknown"}
+      </p>
+
+      <p style="font-size: 16px; margin: 10px 0;">
+        <strong>Dropoff Location:</strong> ${dropoffLocation?.location_name || "Unknown"}
+      </p>
+
+      <p style="font-size: 16px; margin: 10px 0;">
+        <strong>Booking Time:</strong> ${booking?.bookingTime}
+      </p>
+
+      <p style="font-size: 16px; margin: 10px 0;">
+        <strong>Price:</strong> ${price}
+      </p>
     </div>`;
 
     //

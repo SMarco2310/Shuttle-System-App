@@ -178,7 +178,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/sossou/Projects/Summer_Projects/BACKEND-SHUTTLE-SYSTEM/Shuttle-System/src/generated/prisma",
+      "value": "/home/sossou/Documents/GitHub/Shuttle-System-App/backend/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -192,7 +192,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/sossou/Projects/Summer_Projects/BACKEND-SHUTTLE-SYSTEM/Shuttle-System/prisma/schema.prisma",
+    "sourceFilePath": "/home/sossou/Documents/GitHub/Shuttle-System-App/backend/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {

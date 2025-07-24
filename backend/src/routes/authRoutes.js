@@ -31,39 +31,55 @@ authRouter.post("/register", async (req, res) => {
       },
     );
     const html = `
-    <body>
+      <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4;">
+        <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <h2 style="color: #1a73e8; font-size: 24px; margin-bottom: 20px;">Welcome to ShuttleX!</h2>
 
-       <div class="email-container">
-         <h2 class="header">Welcome to ShuttleX!</h2>
-         <p>Hi {{name}},</p>
+          <p style="font-size: 16px; color: #333333; margin: 12px 0;">Hi {{name}},</p>
 
-         <p>Thanks for signing up to <strong>ShuttleX</strong> — your trusted shuttle booking platform. We’re thrilled to have you on board!</p>
+          <p style="font-size: 16px; color: #333333; margin: 12px 0;">
+            Thanks for signing up to <strong>ShuttleX</strong> — your trusted shuttle booking platform. We’re thrilled to have you on board!
+          </p>
 
-         <p>With ShuttleX, you can:</p>
-         <ul>
-           <li>📅 Book shuttles easily from anywhere</li>
-           <li>🧾 Receive instant email receipts</li>
-           <li>💳 Pay quickly with MoMo</li>
-           <li>📊 Access your booking history</li>
-         </ul>
+          <p style="font-size: 16px; color: #333333; margin: 12px 0;">
+            With ShuttleX, you can:
+          </p>
 
-         <p style="margin-top: 20px;">
-           To get started, click below:
-         </p>
-         # <p>
-         #   <a href="{{dashboard_url}}" class="button">Go to My Dashboard</a>
-         # </p>
+          <ul style="font-size: 16px; color: #333333; padding-left: 20px; margin: 12px 0;">
+            <li>📅 Book shuttles easily from anywhere</li>
+            <li>🧾 Receive instant email receipts</li>
+            <li>💳 Pay quickly with MoMo</li>
+            <li>📊 Access your booking history</li>
+          </ul>
 
-         <p>If you have any questions, feel free to reply to this email or contact our support team.</p>
+          <p style="font-size: 16px; color: #333333; margin-top: 24px;">
+            To get started, click below:
+          </p>
 
-         <p>Happy riding!<br>
-         — The ShuttleX Team</p>
+          <!-- Uncomment this section when you're ready to include the button -->
+          <!--
+          <p style="text-align: center; margin: 20px 0;">
+            <a href="{{dashboard_url}}" style="background-color: #1a73e8; color: white; text-decoration: none; padding: 12px 24px; border-radius: 5px; display: inline-block; font-weight: bold;">
+              Go to My Dashboard
+            </a>
+          </p>
+          -->
 
-         <div class="footer">
-           &copy; 2025 ShuttleX, All rights reserved.
-         </div>
-       </div>
-     </body>
+          <p style="font-size: 16px; color: #333333; margin: 12px 0;">
+            If you have any questions, feel free to reply to this email or contact our support team.
+          </p>
+
+          <p style="font-size: 16px; color: #333333; margin: 20px 0;">
+            Happy riding!<br>
+            — The ShuttleX Team
+          </p>
+
+          <div style="font-size: 12px; color: #888888; margin-top: 30px; text-align: center;">
+            &copy; 2025 ShuttleX, All rights reserved.
+          </div>
+        </div>
+      </body>
+
     `.replace("{{name}}", user.name);
     await sendEmail(email, "Welcome to Shuttle System", html);
     //  I will chceck this

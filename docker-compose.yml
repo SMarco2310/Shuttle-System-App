@@ -20,12 +20,11 @@ services:
     depends_on:
       - mysql
     environment:
-      DATABASE_URL: mysql://root:Marco2310%23@localhost:3306/shuttle_system_db
+      DATABASE_URL: mysql://root:Marco2310%23@shuttle-mysql:3306/shuttle_system_db
       DB_HOST: mysql
       DB_USER: root
       DB_PASSWORD: Marco2310#
       DB_NAME: shuttle_system_db
-      DB_PORT: 3306
       JWT_SECRET: your_secrete_text
       EMAIL_HOST: smtp.gmail.com
       EMAIL_PORT: 587

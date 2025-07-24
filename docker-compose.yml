@@ -5,7 +5,7 @@ services:
     image: mysql:8
     container_name: shuttle-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: Marco2310#
       MYSQL_DATABASE: shuttle_system_db
     volumes:
       - mysql_data:/var/lib/mysql
@@ -20,12 +20,18 @@ services:
     depends_on:
       - mysql
     environment:
+      DATABASE_URL: mysql://root:Marco2310%23@localhost:3306/shuttle_system_db
       DB_HOST: mysql
       DB_USER: root
       DB_PASSWORD: Marco2310#
       DB_NAME: shuttle_system_db
       DB_PORT: 3306
-      PORT: 3000
+      JWT_SECRET: your_secrete_text
+      EMAIL_HOST: smtp.gmail.com
+      EMAIL_PORT: 587
+      EMAIL_USER: smarcoeam2310@gmail.com
+      EMAIL_PASS: "ejbl wmse orby vmjx"
+      EMAIL_FROM: "Shuttle System <smarcoeam2310@gmail.com>"
 
   frontend:
     build: ./frontend

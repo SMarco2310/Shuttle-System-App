@@ -1,4 +1,4 @@
-version: '1.0'
+version: "1.0"
 
 services:
   mysql:
@@ -22,8 +22,10 @@ services:
     environment:
       DB_HOST: mysql
       DB_USER: root
-      DB_PASSWORD: root
+      DB_PASSWORD: Marco2310#
       DB_NAME: shuttle_system_db
+      DB_PORT: 3306
+      PORT: 3000
 
   frontend:
     build: ./frontend

@@ -1,5 +1,5 @@
 # This is a Dockerfile for the Back-End application
-FROM node:18-alpine
+FROM node:22
 
 # This creates a new directory called /app in the container
 WORKDIR /app

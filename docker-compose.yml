@@ -5,7 +5,7 @@ services:
     image: mysql:8
     container_name: shuttle-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: Marco2310#
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: shuttle_system_db
     volumes:
       - mysql_data:/var/lib/mysql

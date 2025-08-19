@@ -11,6 +11,8 @@ import Booking from "./pages/Booking.jsx";
 import Locations from "./pages/Locations.jsx";
 import Users from "./pages/Users.jsx";
 import AdminLayout from "./layouts/AdminLayout.jsx";
+import PaymentSuccess from "./pages/PaymentSuccess.jsx";
+import PaymentFailed from "./pages/PaymentFailed.jsx";
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
 
         <Route>
           <Route path="/booking" element={<Booking />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-failed" element={<PaymentFailed />} />
         </Route>
 
         <Route element={<AdminLayout />}>

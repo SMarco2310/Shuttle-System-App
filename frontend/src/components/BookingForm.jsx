@@ -50,10 +50,42 @@ function BookingForm() {
     fetchShuttles();
   }, [cached]);
 
+  // async function handleBooking() {
+  //   try {
+  //     setLoading(true);
+  //     const response = await fetch("http://localhost:3000/booking", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: JSON.stringify({
+  //         userId: user_id,
+  //         pickupLocation_Id: parseInt(pickupLocation),
+  //         dropoffLocation_Id: parseInt(dropoffLocation),
+  //         shuttleId: parseInt(shuttle),
+  //       }),
+  //     });
+
+  //     const data = await response.json();
+
+  //     if (!response.ok) {
+  //       throw new Error(data.message || "Booking failed");
+  //     }
+  //     navigate("/");
+  //   } catch (error) {
+  //     console.error("Booking error:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
+
   async function handleBooking() {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:3000/booking", {
+
+      // Step 1: create booking
+      const bookingRes = await fetch("http://localhost:3000/booking", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,12 +99,27 @@ function BookingForm() {
         }),
       });
 
-      const data = await response.json();
+      const booking = await bookingRes.json();
+      console.log(booking);
 
-      if (!response.ok) {
-        throw new Error(data.message || "Booking failed");
-      }
-      navigate("/");
+      if (!bookingRes.ok) throw new Error(booking.message || "Booking failed");
+
+      // Step 2: Initialize payment
+      const paymentRes = await fetch(
+        "http://localhost:3000/api/payments/initialize",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: JSON.parse(user).email,
+            amount: booking.price,
+            bookingId: booking.id,
+          }),
+        },
+      );
+
+      const paymentData = await paymentRes.json();
+      window.location.href = paymentData.data.authorization_url; // redirect to Paystack
     } catch (error) {
       console.error("Booking error:", error);
     } finally {
@@ -83,13 +130,9 @@ function BookingForm() {
   let date = "";
   let time = "";
   const shuttleObj = shuttles.find((s) => s.id === parseInt(shuttle));
-  // console.log("shuttle:", shuttle);
-  // console.log("shuttleObj:", shuttleObj);
 
   if (shuttleObj) {
-    // console.log("departure_time:", shuttleObj.departure_time);
     [date, time] = shuttleObj.departure_time.split("T");
-    // console.log("date:", date, "time:", time);
     time = "17:00";
   }
   function toTitleCase(str) {

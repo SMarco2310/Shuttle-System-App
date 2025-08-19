@@ -6,6 +6,7 @@ import locationRouter from "./src/routes/locationRoutes.js";
 import bookingRouter from "./src/routes/bookingRoutes.js";
 import authenticate from "./src/middleware/authMiddleware.js";
 import shuttleRouter from "./src/routes/shuttleRoutes.js";
+import paymentRouter from "./src/routes/paymentRoutes.js";
 import {
   createWeeklyShuttles,
   updateBookingStatus,
@@ -40,8 +41,8 @@ app.use(
 // this is for the scheduling of the shuttle
 //
 
-// Run every Monday at 00:00 (midnight)
-cron.schedule("0 20 * * 5", async () => {
+// Run every Friday at 20:00 (midnight)
+cron.schedule("00 20 * * 5", async () => {
   try {
     console.log("Running cron task...");
     await createWeeklyShuttles();
@@ -79,6 +80,9 @@ app.use("/booking", authenticate, bookingRouter);
 // This make sure that all the enpoint of  shuttleroute is under  shuttle
 app.use("/shuttle", shuttleRouter);
 // This make sure that all the enpoint of  shuttleroute that are only for admin is under  admin
+
+// This is for the payment
+app.use("/api/payments", paymentRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

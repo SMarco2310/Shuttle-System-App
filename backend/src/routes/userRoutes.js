@@ -25,6 +25,12 @@ userRouter.get("/:id", authenticate, async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
+    user = {
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      phone: user.phone,
+    };
     res.json(user);
   } catch (error) {
     console.error(error);

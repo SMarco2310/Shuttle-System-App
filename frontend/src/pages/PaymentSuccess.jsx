@@ -1,35 +1,40 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { CheckCircle } from "lucide-react";
+import { motion } from "framer-motion";
 
-function PaymentSuccess() {
-  const navigate = useNavigate();
+export default function PaymentSuccess() {
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-green-50">
+      <motion.div
+        className="bg-white shadow-lg rounded-2xl p-8 text-center max-w-md"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-4" />
 
-  useEffect(() => {
-    async function verifyPayment() {
-      const params = new URLSearchParams(window.location.search);
-      const reference = params.get("reference");
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+          Payment Successful 🎉
+        </h1>
+        <p className="text-gray-600 mb-6">
+          Your payment has been processed successfully. Thank you for your
+          purchase!
+        </p>
 
-      try {
-        const res = await fetch(
-          `http://localhost:3000/api/payments/verify/${reference}`,
-        );
-        const data = await res.json();
-
-        if (data.status === "success") {
-          navigate("/"); // go home or show success screen
-        } else {
-          navigate("/payment-failed");
-        }
-      } catch (err) {
-        console.error("Error verifying payment:", err);
-        navigate("/payment-failed");
-      }
-    }
-
-    verifyPayment();
-  }, [navigate]);
-
-  return <p>Verifying payment, please wait...</p>;
+        <div className="flex flex-col gap-3">
+          <a
+            href="/"
+            className="px-6 py-3 bg-green-500 text-white rounded-xl shadow hover:bg-green-600 transition"
+          >
+            Go Home
+          </a>
+          <a
+            href="/bookings"
+            className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition"
+          >
+            View My Bookings
+          </a>
+        </div>
+      </motion.div>
+    </div>
+  );
 }
-
-export default PaymentSuccess;

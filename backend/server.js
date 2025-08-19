@@ -34,10 +34,17 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:5173", // or whatever your frontend port is
+    origin: "http://localhost:5176", // or whatever your frontend port is
     credentials: true, // allow cookies/credentials
   }),
 );
+
+// app.use(
+//   cors({
+//     origin: ["https://shuttlesystem.netlify.app"],
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//   }),
+// );
 // this is for the scheduling of the shuttle
 //
 

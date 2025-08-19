@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import PaystackPop from "@paystack/inline-js";
 
 function BookingForm() {
   const navigate = useNavigate();
@@ -9,10 +10,10 @@ function BookingForm() {
   const [shuttle, setShuttle] = useState(""); // Stores shuttle ID
   const [locations, setLocations] = useState([]);
   const [shuttles, setShuttles] = useState([]);
+  const [user, setUser] = useState(null);
 
   const cached = localStorage.getItem("locations");
-  const user = localStorage.getItem("user");
-  const user_id = user ? JSON.parse(user).userId : null;
+  const user_id = JSON.parse(localStorage.getItem("user")).userId;
   const token = localStorage.getItem("token");
   // this  will get the location in two
 
@@ -50,35 +51,26 @@ function BookingForm() {
     fetchShuttles();
   }, [cached]);
 
-  // async function handleBooking() {
-  //   try {
-  //     setLoading(true);
-  //     const response = await fetch("http://localhost:3000/booking", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //       body: JSON.stringify({
-  //         userId: user_id,
-  //         pickupLocation_Id: parseInt(pickupLocation),
-  //         dropoffLocation_Id: parseInt(dropoffLocation),
-  //         shuttleId: parseInt(shuttle),
-  //       }),
-  //     });
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`http://localhost:3000/user/${user_id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        setUser(data);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //     const data = await response.json();
-
-  //     if (!response.ok) {
-  //       throw new Error(data.message || "Booking failed");
-  //     }
-  //     navigate("/");
-  //   } catch (error) {
-  //     console.error("Booking error:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }
+    fetchUser();
+  }, [user_id]);
 
   async function handleBooking() {
     try {
@@ -100,13 +92,11 @@ function BookingForm() {
       });
 
       const booking = await bookingRes.json();
-      console.log(booking);
-
       if (!bookingRes.ok) throw new Error(booking.message || "Booking failed");
 
-      // Step 2: Initialize payment
+      // Step 2: Initialize payment via backend
       const paymentRes = await fetch(
-        "http://localhost:3000/api/payments/initialize",
+        "http://localhost:3000/api/payments/init",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -119,7 +109,42 @@ function BookingForm() {
       );
 
       const paymentData = await paymentRes.json();
-      window.location.href = paymentData.data.authorization_url; // redirect to Paystack
+      if (!paymentRes.ok)
+        throw new Error(paymentData.message || "Payment init failed");
+
+      const { reference } = paymentData;
+
+      // Step 3: Launch Paystack popup
+      const paystack = new PaystackPop();
+      paystack.newTransaction({
+        key: "pk_test_d1f61fd4add0486460c5a543b1a51e97015d1207", // your PUBLIC KEY here
+        email: JSON.parse(user).email,
+        amount: booking.price * 100, // in pesewas
+        reference: reference,
+        onSuccess: async (transaction) => {
+          console.log("Payment success:", transaction);
+
+          // Step 4: Verify with backend
+          const verifyRes = await fetch(
+            "http://localhost:3000/api/payments/verify",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ reference: transaction.reference }),
+            },
+          );
+
+          const verifyData = await verifyRes.json();
+          if (verifyData.success) {
+            navigate("/payment-success");
+          } else {
+            navigate("/payment-failed");
+          }
+        },
+        onCancel: () => {
+          alert("Payment cancelled");
+        },
+      });
     } catch (error) {
       console.error("Booking error:", error);
     } finally {

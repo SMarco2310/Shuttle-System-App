@@ -74,15 +74,3 @@ model Shuttle {
 
   bookings Booking[] @relation("ShuttleBookings")
 }
-
-// model Payment {
-//   id                   Int       @id @default(autoincrement())
-//   user                 User      @relation("UserPayments", fields: [userId], references: [id], onDelete: Cascade)
-//   userId               Int
-
-//   booking              Booking   @relation("BookingPayments", fields: [id], references: [id])
-//   bookingId            Int
-
-//   amount               Decimal   @db.Decimal(10, 2)
-//   status               String    @default("PENDING")
-// }

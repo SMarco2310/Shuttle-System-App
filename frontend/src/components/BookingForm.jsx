@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PaystackPop from "@paystack/inline-js";
+import { process } from "dotenv";
 
 function BookingForm() {
   const navigate = useNavigate();
@@ -130,7 +131,7 @@ function BookingForm() {
       // Step 3: Launch Paystack popup
       const paystack = new PaystackPop();
       paystack.newTransaction({
-        key: "pk_live_1fca924812ade85695ff45462a0911484aa6685e",
+        key: process.env.LIVE_KEY,
         email: userData.email, // Use the already parsed user data
         amount: booking.price * 100, // in pesewas
         reference: reference,

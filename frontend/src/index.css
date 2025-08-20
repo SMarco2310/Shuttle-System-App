@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 html {
     scroll-behavior: smooth;
 }
@@ -67,8 +69,8 @@ section {
 .toggle-password-btn,
 .toggle-password {
     position: absolute;
-    top: 38%;
-    right: 9px;
+    top: 40%;
+    right: 30px;
     transform: translateY(-50%);
     background: none;
     border: none;

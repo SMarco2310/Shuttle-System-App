@@ -13,11 +13,25 @@ import {
   updateShuttleAvailability,
 } from "./src/utils/utils.js";
 import cron from "node-cron";
-
-//
+import { PrismaClient } from "@prisma/client";
 import cors from "cors";
 //
 dotenv.config();
+
+const prisma = new PrismaClient();
+
+// Auto-run migrations on startup
+async function main() {
+  try {
+    await prisma.$connect();
+    console.log("✅ Database connected successfully");
+    await prisma.$executeRaw`SELECT 1`;
+  } catch (error) {
+    console.error("Database connection failed:", error);
+  }
+}
+
+main();
 
 const app = express();
 
@@ -34,19 +48,31 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:5176", // or whatever your frontend port is
+    origin: "http://localhost:5174", // or whatever your frontend port is
     credentials: true, // allow cookies/credentials
   }),
 );
 
-// app.use(
-//   cors({
-//     origin: ["https://shuttlesystem.netlify.app"],
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//   }),
-// );
-// this is for the scheduling of the shuttle
-//
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
+});
+
+// Add error handling middleware at the end
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Something went wrong!" });
+});
+
+// Handle unhandled promise rejections
+process.on("unhandledRejection", (err) => {
+  console.log("UNHANDLED REJECTION! 💥 Shutting down...");
+  console.log(err.name, err.message);
+  process.exit(1);
+});
 
 // Run every Friday at 20:00 (midnight)
 cron.schedule("00 20 * * 5", async () => {
@@ -59,9 +85,9 @@ cron.schedule("00 20 * * 5", async () => {
 });
 // this to allow the parsing of JSON data in the request body
 
-app.get("/", (req, res) => {
-  res.send("<h1>Hello World!</h1>");
-});
+// app.get("/", (req, res) => {
+//   res.send("<h1>Hello World!</h1>");
+// });
 
 // This make sure that all the enpoint of  authroute is under  auth
 app.use("/auth", authRouter);
@@ -94,3 +120,37 @@ app.use("/api/payments", paymentRouter);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+// // CORS configuration for handling cookies and cross-site requests
+// app.use(cors({
+//   origin: [
+//     'http://localhost:3000',
+//     'http://localhost:3001',
+//     'http://127.0.0.1:3000',
+//     'http://127.0.0.1:3001',
+//     // Add your production frontend URL here
+//   ],
+//   credentials: true, // Important: allows cookies to be sent
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: [
+//     'Origin',
+//     'X-Requested-With',
+//     'Content-Type',
+//     'Accept',
+//     'Authorization',
+//     'Cache-Control',
+//     'Pragma'
+//   ],
+//   exposedHeaders: ['set-cookie']
+// }));
+
+// // Handle preflight requests
+// app.options('*', cors());
+
+// // Additional security headers
+// app.use((req, res, next) => {
+//   res.header('Access-Control-Allow-Credentials', 'true');
+//   res.header('Cross-Origin-Embedder-Policy', 'unsafe-none');
+//   res.header('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+//   next();
+// });

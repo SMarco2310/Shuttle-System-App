@@ -76,7 +76,10 @@ function BookingForm() {
     try {
       setLoading(true);
 
-      // Step 1: create booking
+      // Parse user once at the beginning
+      const userData = typeof user === "string" ? JSON.parse(user) : user;
+
+      // Step 1: Create booking
       const bookingRes = await fetch("http://localhost:3000/booking", {
         method: "POST",
         headers: {
@@ -91,51 +94,66 @@ function BookingForm() {
         }),
       });
 
+      // Check if response is ok before parsing
+      if (!bookingRes) {
+        const errorText = await bookingRes.error();
+        console.error("Booking response error:", errorText);
+        throw new Error("Booking failed");
+      }
+
       const booking = await bookingRes.json();
-      if (!bookingRes.ok) throw new Error(booking.message || "Booking failed");
+      console.log("Booking created:", booking);
 
       // Step 2: Initialize payment via backend
       const paymentRes = await fetch(
-        "http://localhost:3000/api/payments/init",
+        "http://localhost:3000/api/payments/initialize",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            email: JSON.parse(user).email,
+            email: userData.email,
             amount: booking.price,
             bookingId: booking.id,
           }),
         },
       );
 
-      const paymentData = await paymentRes.json();
-      if (!paymentRes.ok)
-        throw new Error(paymentData.message || "Payment init failed");
+      if (!paymentRes.ok) {
+        const errorText = await paymentRes.error();
+        console.error("Payment init response error:", errorText);
+        throw new Error("Payment initialization failed");
+      }
 
+      const paymentData = await paymentRes.json();
       const { reference } = paymentData;
 
       // Step 3: Launch Paystack popup
       const paystack = new PaystackPop();
       paystack.newTransaction({
-        key: "pk_test_d1f61fd4add0486460c5a543b1a51e97015d1207", // your PUBLIC KEY here
-        email: JSON.parse(user).email,
+        key: "pk_live_1fca924812ade85695ff45462a0911484aa6685e",
+        email: userData.email, // Use the already parsed user data
         amount: booking.price * 100, // in pesewas
         reference: reference,
         onSuccess: async (transaction) => {
           console.log("Payment success:", transaction);
 
-          // Step 4: Verify with backend
+          // Step 4: Verify with backend - fix the endpoint
           const verifyRes = await fetch(
-            "http://localhost:3000/api/payments/verify",
+            `http://localhost:3000/api/payments/verify/${transaction.reference}`, // Changed to URL param
             {
-              method: "POST",
+              method: "GET", // Changed to GET since you're using URL params
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ reference: transaction.reference }),
             },
           );
 
+          if (!verifyRes) {
+            console.error("Verify response error:", await verifyRes.error());
+            navigate("/payment-failed");
+            return;
+          }
+
           const verifyData = await verifyRes.json();
-          if (verifyData.success) {
+          if (verifyData.status === "success") {
             navigate("/payment-success");
           } else {
             navigate("/payment-failed");
@@ -147,6 +165,7 @@ function BookingForm() {
       });
     } catch (error) {
       console.error("Booking error:", error);
+      alert("Booking failed: " + error.message);
     } finally {
       setLoading(false);
     }

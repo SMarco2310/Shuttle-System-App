@@ -28,7 +28,7 @@ export default function PaymentSuccess() {
             Go Home
           </a>
           <a
-            href="/bookings"
+            href={`/user/profile/${JSON.parse(localStorage.getItem("user")).userId}`}
             className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition"
           >
             View My Bookings

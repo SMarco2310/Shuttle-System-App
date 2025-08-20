@@ -19,8 +19,6 @@ RUN npm run build
 # This exposes port 5173 for the application
 EXPOSE 5173
 
-# This copies the .env file to the container
-COPY .env .
 
 # This starts the application using npm
 CMD ["npm", "start"]

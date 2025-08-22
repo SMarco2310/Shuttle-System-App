@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PaystackPop from "@paystack/inline-js";
-import { process } from "dotenv";
+
+// process.env.LIVE_KEY = "";
 
 function BookingForm() {
   const navigate = useNavigate();
@@ -16,7 +17,6 @@ function BookingForm() {
   const cached = localStorage.getItem("locations");
   const user_id = JSON.parse(localStorage.getItem("user")).userId;
   const token = localStorage.getItem("token");
-  // this  will get the location in two
 
   const fetchLocations = async () => {
     try {
@@ -131,7 +131,7 @@ function BookingForm() {
       // Step 3: Launch Paystack popup
       const paystack = new PaystackPop();
       paystack.newTransaction({
-        key: process.env.LIVE_KEY,
+        key: "pk_live_1fca924812ade85695ff45462a0911484aa6685e",
         email: userData.email, // Use the already parsed user data
         amount: booking.price * 100, // in pesewas
         reference: reference,
@@ -161,12 +161,14 @@ function BookingForm() {
           }
         },
         onCancel: () => {
+          navigate("/payment-failed");
           alert("Payment cancelled");
+
         },
       });
     } catch (error) {
       console.error("Booking error:", error);
-      alert("Booking failed: " + error.message);
+      navigate("/payment-failed");
     } finally {
       setLoading(false);
     }

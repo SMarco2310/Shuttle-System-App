@@ -40,6 +40,7 @@ export const initializePayment = async (req, res) => {
     });
   } catch (err) {
     console.error("Payment init error:", err.response?.data || err.message);
+    console.log(err);
     res.status(500).json({ error: "Payment initialization failed" });
   }
 };
@@ -50,6 +51,7 @@ export const verifyPayment = async (req, res) => {
     const { reference } = req.params; // Getting from URL params
 
     if (!reference) {
+      console.error("Missing required fields");
       return res.status(400).json({ error: "Reference is required" });
     }
 
@@ -61,10 +63,10 @@ export const verifyPayment = async (req, res) => {
     );
 
     const data = response.data;
-
     if (data.status && data.data.status === "success") {
-      // Update booking status to confirmed
+      // Update booking status to confirm
       const bookingId = data.data.metadata.bookingId;
+
       if (bookingId) {
         try {
           await prisma.booking.update({
@@ -72,12 +74,16 @@ export const verifyPayment = async (req, res) => {
             data: { status: "CONFIRMED" },
           });
         } catch (updateError) {
+          console.log(updateError);
           console.error("Error updating booking status:", updateError);
         }
       }
 
       return res.json({ status: "success" });
     } else {
+      // await prisma.booking.delete(
+      //     {where:{id: parseInt(bookingId)}}
+      // );
       return res.json({ status: "failed" });
     }
   } catch (err) {
@@ -85,6 +91,7 @@ export const verifyPayment = async (req, res) => {
       "Payment verification error:",
       err.response?.data || err.message,
     );
+    console.log(err);
     res.status(500).json({ error: "Payment verification failed" });
   }
 };

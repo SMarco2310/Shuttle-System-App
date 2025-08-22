@@ -5,8 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  provider      = "prisma-client-js"
+  output        = "../src/generated/prisma"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
   // The output field specifies where the generated Prisma Client will be saved
   // By default, it goes to node_modules/.prisma/client, but this overrides it
   // to save the generated client code to "../src/generated/prisma" directory

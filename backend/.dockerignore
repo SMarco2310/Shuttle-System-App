@@ -1,0 +1,15 @@
+# Dependency files
+node_modules
+npm-debug.log*
+
+# Configuration files (should be set as environment variables on Render)
+.env
+
+# Prisma generated files (built in the Dockerfile)
+/src/generated/
+
+# Local development files
+*.log
+.DS_Store
+.vscode/
+nodemon.json

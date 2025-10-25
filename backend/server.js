@@ -16,6 +16,10 @@ import cron from "node-cron";
 import { PrismaClient } from "@prisma/client";
 import cors from "cors";
 //
+
+
+
+
 dotenv.config();
 
 const prisma = new PrismaClient();
@@ -121,36 +125,3 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// // CORS configuration for handling cookies and cross-site requests
-// app.use(cors({
-//   origin: [
-//     'http://localhost:3000',
-//     'http://localhost:3001',
-//     'http://127.0.0.1:3000',
-//     'http://127.0.0.1:3001',
-//     // Add your production frontend URL here
-//   ],
-//   credentials: true, // Important: allows cookies to be sent
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: [
-//     'Origin',
-//     'X-Requested-With',
-//     'Content-Type',
-//     'Accept',
-//     'Authorization',
-//     'Cache-Control',
-//     'Pragma'
-//   ],
-//   exposedHeaders: ['set-cookie']
-// }));
-
-// // Handle preflight requests
-// app.options('*', cors());
-
-// // Additional security headers
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Credentials', 'true');
-//   res.header('Cross-Origin-Embedder-Policy', 'unsafe-none');
-//   res.header('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
-//   next();
-// });

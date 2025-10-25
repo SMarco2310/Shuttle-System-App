@@ -22,7 +22,7 @@ The aim of this project is to **simplify** and **digitize** the shuttle booking 
 | ------------ | --------------------------------- |
 | **Backend**  | Node.js, Express.js               |
 | **Auth**     | JWT-based Authentication          |
-| **Payments** | MTN MoMo API (Sandbox)            |
+| **Payments** | Paystack API                      |
 | **Email**    | Nodemailer                        |
 | **Database** | MySQL with Prisma ORM             |
 | **Frontend** | _(planned)_ React.js _(or other)_ |
@@ -32,11 +32,11 @@ The aim of this project is to **simplify** and **digitize** the shuttle booking 
 ## 📦 Features
 
 ✅ JWT Authentication
-✅ MTN MoMo Payment Integration
+✅ Paystack Payment Integration
 ✅ Email Receipts on Booking
 ✅ Shuttle Creation & Management
 ✅ Seat Tracking & Auto-Status (`full`, `departed`)
-✅ Admin Dashboard _(coming soon)_
+✅ Admin Dashboard
 
 ---
 
